@@ -381,15 +381,27 @@ func (mp4 MP4) readGenre(boxes MP4Boxes) (Genre, error) {
 
 func (mp4 MP4) readTags(boxes MP4Boxes) (*MP4Tags, error) {
 	album, err := mp4.readTag(boxes, "(c)alb")
-	if err != nil  {
+	if err != nil {
+		return nil, err
+	}
+	albumSort, err := mp4.readTag(boxes, "soal")
+	if err != nil {
 		return nil, err
 	}
 	albumArtist, err := mp4.readTag(boxes, "aART")
-	if err != nil  {
+	if err != nil {
+		return nil, err
+	}
+	albumArtistSort, err := mp4.readTag(boxes, "soaa")
+	if err != nil {
 		return nil, err
 	}
 	artist, err := mp4.readTag(boxes, "(c)art")
-	if err != nil  {
+	if err != nil {
+		return nil, err
+	}
+	artistSort, err := mp4.readTag(boxes, "soar")
+	if err != nil {
 		return nil, err
 	}
 	bpm, err := mp4.readBPM(boxes)
@@ -398,109 +410,122 @@ func (mp4 MP4) readTags(boxes MP4Boxes) (*MP4Tags, error) {
 	}
 
 	comment, err := mp4.readTag(boxes, "(c)cmt")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	composer, err := mp4.readTag(boxes, "(c)wrt")
-	if err != nil  {
+	if err != nil {
+		return nil, err
+	}
+	composerSort, err := mp4.readTag(boxes, "soco")
+	if err != nil {
 		return nil, err
 	}
 	conductor, err := mp4.readTag(boxes, "(c)con")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	copyright, err := mp4.readTag(boxes, "cprt")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	custom, otherCustom, err := mp4.readCustom(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
-	}	
+	}
 	customGenre, err := mp4.readTag(boxes, "(c)gen")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	description, err := mp4.readTag(boxes, "desc")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	lyrics, err := mp4.readTag(boxes, "(c)lyr")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	narrator, err := mp4.readTag(boxes, "(c)nrt")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	publisher, err := mp4.readTag(boxes, "(c)pub")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	title, err := mp4.readTag(boxes, "(c)nam")
-	if err != nil  {
+	if err != nil {
+		return nil, err
+	}
+	titleSort, err := mp4.readTag(boxes, "sonm")
+	if err != nil {
 		return nil, err
 	}
 
 	pics, err := mp4.readPics(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	trackNum, trackTotal, err := mp4.readTrknDisk(boxes, "trkn")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 	discNum, discTotal, err := mp4.readTrknDisk(boxes, "disk")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	genre, err := mp4.readGenre(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	advisory, err := mp4.readAdvisory(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	albumID, err := mp4.readITAlbumID(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	artistID, err := mp4.readITArtistID(boxes)
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	tags := &MP4Tags{
-		Album: album,
-		AlbumArtist: albumArtist,
-		Artist: artist,
-		BPM: bpm,
-		Comment: comment,
-		Composer: composer,
-		Conductor: conductor,
-		Copyright: copyright,
-		Custom: custom,
-		CustomGenre: customGenre,
-		Description: description,
-		DiscNumber: discNum,
-		DiscTotal: discTotal,
-		Genre: genre,
-		ItunesAdvisory: advisory,
-		ItunesAlbumID: albumID,
-		ItunesArtistID: artistID,
-		Lyrics: lyrics,
-		Narrator: narrator,
-		OtherCustom: otherCustom,
-		Pictures: pics,
-		Publisher: publisher,
-		Title: title,
-		TrackNumber: trackNum,
-		TrackTotal: trackTotal,
+		Album:           album,
+		AlbumSort:       albumSort,
+		AlbumArtist:     albumArtist,
+		AlbumArtistSort: albumArtistSort,
+		Artist:          artist,
+		ArtistSort:      artistSort,
+		BPM:             bpm,
+		Comment:         comment,
+		Composer:        composer,
+		ComposerSort:    composerSort,
+		Conductor:       conductor,
+		Copyright:       copyright,
+		Custom:          custom,
+		CustomGenre:     customGenre,
+		Description:     description,
+		DiscNumber:      discNum,
+		DiscTotal:       discTotal,
+		Genre:           genre,
+		ItunesAdvisory:  advisory,
+		ItunesAlbumID:   albumID,
+		ItunesArtistID:  artistID,
+		Lyrics:          lyrics,
+		Narrator:        narrator,
+		OtherCustom:     otherCustom,
+		Pictures:        pics,
+		Publisher:       publisher,
+		Title:           title,
+		TitleSort:       titleSort,
+		TrackNumber:     trackNum,
+		TrackTotal:      trackTotal,
 	}
 
 	year, err := mp4.readTag(boxes, "(c)day")
