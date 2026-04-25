@@ -22,7 +22,7 @@ func (boxes MP4Boxes) getBoxesByPath(boxPath string) []*MP4Box {
 	for _, box := range boxes.Boxes {
 		if box.Path == boxPath {
 			outBoxes = append(outBoxes, box)
-		}	
+		}
 	}
 	return outBoxes
 }
@@ -36,7 +36,7 @@ func (mp4 MP4) readString(size int64) (string, error) {
 	return string(buf), nil
 }
 
-func (mp4 MP4)  readBoxName() (string, error) {
+func (mp4 MP4) readBoxName() (string, error) {
 	buf := make([]byte, 4)
 	_, err := io.ReadFull(mp4.f, buf)
 	if err != nil {
@@ -98,7 +98,7 @@ func (mp4 MP4) readBoxes(boxes MP4Boxes, parentEndsAt, level int64, p string) (M
 	box := &MP4Box{
 		StartOffset: pos,
 		EndOffset:   endsAt,
-		BoxSize:	 boxSize,
+		BoxSize:     boxSize,
 		Path:        p[1:],
 	}
 	boxes.Boxes = append(boxes.Boxes, box)
@@ -109,7 +109,7 @@ func (mp4 MP4) readBoxes(boxes MP4Boxes, parentEndsAt, level int64, p string) (M
 		}
 	}
 	p = p[:len(p)-len(boxName)-1]
-	_, err = mp4.f.Seek(pos + boxSize, io.SeekStart)
+	_, err = mp4.f.Seek(pos+boxSize, io.SeekStart)
 	if err != nil {
 		return empty, err
 	}
@@ -122,7 +122,7 @@ func checkBoxes(boxes MP4Boxes) error {
 		"moov", "mdat", "moov.udta", "moov.udta.meta",
 		"moov.trak.mdia.minf.stbl.stco",
 	}
-	// "moov.udta.meta.ilst" 
+	// "moov.udta.meta.ilst"
 	for _, path := range paths {
 		if boxes.getBoxByPath(path) == nil {
 			return &ErrBoxNotPresent{Msg: path + " box not present"}
@@ -141,7 +141,7 @@ func (mp4 MP4) readTag(boxes MP4Boxes, boxName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tag, err := mp4.readString(box.BoxSize-16)
+	tag, err := mp4.readString(box.BoxSize - 16)
 	return tag, err
 }
 
@@ -184,7 +184,7 @@ func (mp4 MP4) readPics(_boxes MP4Boxes) ([]*MP4Picture, error) {
 			return nil, err
 		}
 
-		imageType, ok  := resolveImageType[uint8(b)]
+		imageType, ok := resolveImageType[uint8(b)]
 		if ok {
 			if imageType == ImageTypeJPEG {
 				pic.Format = ImageTypeJPEG
@@ -242,11 +242,11 @@ func addToOthers(others map[string][]string, key, val string) map[string][]strin
 
 func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]string, error) {
 	var (
-		names []string
+		names  []string
 		values []string
 	)
 	path := "moov.udta.meta.ilst.----"
-	nameBoxes := boxes.getBoxesByPath(path+".name")
+	nameBoxes := boxes.getBoxesByPath(path + ".name")
 	if nameBoxes == nil {
 		return nil, nil, nil
 	}
@@ -255,7 +255,7 @@ func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]strin
 		if err != nil {
 			return nil, nil, err
 		}
-		name, err := mp4.readString(box.BoxSize-12)
+		name, err := mp4.readString(box.BoxSize - 12)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -267,11 +267,11 @@ func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]strin
 
 	others := map[string][]string{}
 
-	dataBoxes := boxes.getBoxesByPath(path+".data")
+	dataBoxes := boxes.getBoxesByPath(path + ".data")
 
 	var (
 		prev int64
-		idx int
+		idx  int
 	)
 
 	for _, box := range dataBoxes {
@@ -279,7 +279,7 @@ func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]strin
 		if err != nil {
 			return nil, nil, err
 		}
-		value, err := mp4.readString(box.BoxSize-16)
+		value, err := mp4.readString(box.BoxSize - 16)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -300,7 +300,7 @@ func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]strin
 			existingOthers, ok := others[name]
 			if ok {
 				existingOthers = append(existingOthers, values[idx])
-				others[name] = existingOthers			
+				others[name] = existingOthers
 			} else {
 				others[name] = []string{values[idx]}
 			}
@@ -529,24 +529,22 @@ func (mp4 MP4) readTags(boxes MP4Boxes) (*MP4Tags, error) {
 	}
 
 	year, err := mp4.readTag(boxes, "(c)day")
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	if year != "" {
+		tags.Date = year
 		if containsOnlyNums(year) {
 			yearInt, err := strconv.ParseInt(year, 10, 32)
-			if err != nil {
-				return nil, err
+			if err == nil {
+				tags.Year = int32(yearInt)
 			}
-			tags.Year = int32(yearInt)
-		} else {
-			tags.Date = year
 		}
 	}
 
 	return tags, nil
-} 
+}
 
 func (mp4 MP4) actualRead() (*MP4Tags, MP4Boxes, error) {
 	var boxes MP4Boxes

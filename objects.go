@@ -3,31 +3,30 @@ package mp4tag
 import "os"
 
 type ErrBoxNotPresent struct {
-    Msg  string
+	Msg string
 }
 
 type ErrUnsupportedFtyp struct {
-    Msg  string
+	Msg string
 }
 
-type ErrInvalidStcoSize struct {}
+type ErrInvalidStcoSize struct{}
 
-type ErrInvalidMagic struct {}
+type ErrInvalidMagic struct{}
 
-
-func (e *ErrBoxNotPresent) Error() string { 
-    return e.Msg
+func (e *ErrBoxNotPresent) Error() string {
+	return e.Msg
 }
 
-func (e *ErrUnsupportedFtyp) Error() string { 
-    return e.Msg
+func (e *ErrUnsupportedFtyp) Error() string {
+	return e.Msg
 }
 
-func (_ *ErrInvalidStcoSize) Error() string {
+func (*ErrInvalidStcoSize) Error() string {
 	return "stco size is invalid"
 }
 
-func (_ *ErrInvalidMagic) Error() string {
+func (*ErrInvalidMagic) Error() string {
 	return "file header is corrupted or not an mp4 file"
 }
 
@@ -43,13 +42,13 @@ var ftyps = [8][]byte{
 }
 
 var containers = []string{
-  "moov", "udta", "meta", "ilst", "----", "(c)alb",
-  "aART", "(c)art", "(c)nam", "(c)cmt", "(c)gen", "gnre",
-  "(c)wrt", "(c)con", "cprt", "desc", "(c)lyr", "(c)nrt",
-  "(c)pub", "trkn", "covr", "(c)day", "disk", "(c)too",
-  "trak", "mdia", "minf", "stbl", "rtng", "plID",
-  "atID", "tmpo", "sonm", "soal", "soar", "soco",
-  "soaa",
+	"moov", "udta", "meta", "ilst", "----", "(c)alb",
+	"aART", "(c)art", "(c)nam", "(c)cmt", "(c)gen", "gnre",
+	"(c)wrt", "(c)con", "cprt", "desc", "(c)lyr", "(c)nrt",
+	"(c)pub", "trkn", "covr", "(c)day", "disk", "(c)too",
+	"trak", "mdia", "minf", "stbl", "rtng", "plID",
+	"atID", "tmpo", "sonm", "soal", "soar", "soco",
+	"soaa",
 }
 
 // 0-9
@@ -59,9 +58,9 @@ var numbers = []rune{
 }
 
 type MP4 struct {
-	f *os.File
-	path string
-	size int64
+	f           *os.File
+	path        string
+	size        int64
 	upperCustom bool
 }
 
@@ -77,6 +76,7 @@ type MP4Boxes struct {
 }
 
 type ImageType int8
+
 const (
 	ImageTypeJPEG ImageType = iota + 13
 	ImageTypePNG
@@ -89,6 +89,7 @@ var resolveImageType = map[uint8]ImageType{
 }
 
 type ItunesAdvisory int8
+
 const (
 	ItunesAdvisoryNone ItunesAdvisory = iota
 	ItunesAdvisoryExplicit
@@ -102,6 +103,7 @@ var resolveItunesAdvisory = map[uint8]ItunesAdvisory{
 
 // GenreNone
 type Genre int8
+
 const (
 	GenreNone Genre = iota
 	GenreBlues
@@ -186,15 +188,15 @@ const (
 )
 
 var resolveGenre = map[uint8]Genre{
-	1: GenreBlues,
-	2: GenreClassicRock,
-	3: GenreCountry,
-	4: GenreDance,
-	5: GenreDisco,
-	6: GenreFunk,
-	7: GenreGrunge,
-	8: GenreHipHop,
-	9: GenreJazz,
+	1:  GenreBlues,
+	2:  GenreClassicRock,
+	3:  GenreCountry,
+	4:  GenreDance,
+	5:  GenreDisco,
+	6:  GenreFunk,
+	7:  GenreGrunge,
+	8:  GenreHipHop,
+	9:  GenreJazz,
 	10: GenreMetal,
 	11: GenreNewAge,
 	12: GenreOldies,
@@ -269,41 +271,41 @@ var resolveGenre = map[uint8]Genre{
 
 type MP4Picture struct {
 	Format ImageType
-	Data []byte
+	Data   []byte
 }
 
 type MP4Tags struct {
-	Album string
-	AlbumSort string 
-	AlbumArtist string
+	Album           string
+	AlbumSort       string
+	AlbumArtist     string
 	AlbumArtistSort string
-	Artist string
-	ArtistSort string
-	BPM int16
-	Comment string
-	Composer string
-	ComposerSort string
-	Conductor string
-	Copyright string
-	Custom map[string]string
-	CustomGenre string
-	Date string
-	Description string
-	Director string
-	DiscNumber int16
-	DiscTotal int16
-	Genre Genre
-	ItunesAdvisory ItunesAdvisory
-	ItunesAlbumID int32
-	ItunesArtistID int32
-	Lyrics string
-	Narrator string
-	OtherCustom map[string][]string
-	Pictures []*MP4Picture
-	Publisher string
-	Title string
-	TitleSort string
-	TrackNumber int16
-	TrackTotal int16
-	Year int32
+	Artist          string
+	ArtistSort      string
+	BPM             int16
+	Comment         string
+	Composer        string
+	ComposerSort    string
+	Conductor       string
+	Copyright       string
+	Custom          map[string]string
+	CustomGenre     string
+	Date            string
+	Description     string
+	Director        string
+	DiscNumber      int16
+	DiscTotal       int16
+	Genre           Genre
+	ItunesAdvisory  ItunesAdvisory
+	ItunesAlbumID   int32
+	ItunesArtistID  int32
+	Lyrics          string
+	Narrator        string
+	OtherCustom     map[string][]string
+	Pictures        []*MP4Picture
+	Publisher       string
+	Title           string
+	TitleSort       string
+	TrackNumber     int16
+	TrackTotal      int16
+	Year            int32
 }

@@ -1,12 +1,12 @@
 package mp4tag
 
-import ( 
-	"path/filepath"
-	"time"
-	"os"
-	"io"
-	"strings"
+import (
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func containsRune(items []rune, value rune) bool {
@@ -41,7 +41,7 @@ func containsStr(arr []string, val string) bool {
 			return true
 		}
 	}
-	return false	
+	return false
 }
 
 func getTempPath(path string) string {
@@ -57,21 +57,21 @@ func getPos(f *os.File) (int64, error) {
 }
 
 func moveMP4(srcPath, destPath string) error {
-    inFile, err := os.Open(srcPath)
-    if err != nil {
-        return err
-    }
-    outFile, err := os.Create(destPath)
-    if err != nil {
-        inFile.Close()
-        return err
-    }
-    defer outFile.Close()
-    _, err = io.Copy(outFile, inFile)
-    if err != nil {
-        return err
-    }
-    inFile.Close()
-    err = os.Remove(srcPath)
-    return err
+	inFile, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	outFile, err := os.Create(destPath)
+	if err != nil {
+		inFile.Close()
+		return err
+	}
+	defer outFile.Close()
+	_, err = io.Copy(outFile, inFile)
+	if err != nil {
+		return err
+	}
+	inFile.Close()
+	err = os.Remove(srcPath)
+	return err
 }
