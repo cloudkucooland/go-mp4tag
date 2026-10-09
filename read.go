@@ -229,86 +229,58 @@ func (mp4 MP4) readTrknDisk(boxes MP4Boxes, boxName string) (int16, int16, error
 	return num, total, nil
 }
 
-func addToOthers(others map[string][]string, key, val string) map[string][]string {
-	existingOthers, ok := others[key]
-	if ok {
-		existingOthers = append(existingOthers, val)
-		others[key] = existingOthers
-	} else {
-		others[key] = []string{val}
-	}
-	return others
-}
-
-func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string]string, map[string][]string, error) {
-	var (
-		names  []string
-		values []string
-	)
-	path := "moov.udta.meta.ilst.----"
-	nameBoxes := boxes.getBoxesByPath(path + ".name")
-	if nameBoxes == nil {
-		return nil, nil, nil
-	}
-	for _, box := range nameBoxes {
-		_, err := mp4.f.Seek(box.StartOffset+12, io.SeekStart)
-		if err != nil {
-			return nil, nil, err
-		}
-		name, err := mp4.readString(box.BoxSize - 12)
-		if err != nil {
-			return nil, nil, err
-		}
-		if mp4.upperCustom {
-			name = strings.ToUpper(name)
-		}
-		names = append(names, name)
+func (mp4 MP4) readCustom(boxes MP4Boxes) (map[string][]string, error) {
+	customBoxes := boxes.getBoxesByPath("moov.udta.meta.ilst.----")
+	if len(customBoxes) == 0 {
+		return nil, nil
 	}
 
-	others := map[string][]string{}
+	custom := map[string][]string{}
 
-	dataBoxes := boxes.getBoxesByPath(path + ".data")
+	for _, cBox := range customBoxes {
+		var name string
+		var values []string
 
-	var (
-		prev int64
-		idx  int
-	)
-
-	for _, box := range dataBoxes {
-		_, err := mp4.f.Seek(box.StartOffset+16, io.SeekStart)
-		if err != nil {
-			return nil, nil, err
-		}
-		value, err := mp4.readString(box.BoxSize - 16)
-		if err != nil {
-			return nil, nil, err
-		}
-		if box.StartOffset == prev {
-			others = addToOthers(others, names[idx-1], value)
-			prev = box.EndOffset
-			continue
-		}
-		values = append(values, value)
-		prev = box.EndOffset
-		idx++
-	}
-
-	custom := map[string]string{}
-	for idx, name := range names {
-		_, ok := custom[name]
-		if ok {
-			existingOthers, ok := others[name]
-			if ok {
-				existingOthers = append(existingOthers, values[idx])
-				others[name] = existingOthers
-			} else {
-				others[name] = []string{values[idx]}
+		for _, box := range boxes.Boxes {
+			if box.StartOffset >= cBox.StartOffset && box.EndOffset <= cBox.EndOffset {
+				if box.Path == "moov.udta.meta.ilst.----.name" {
+					_, err := mp4.f.Seek(box.StartOffset+12, io.SeekStart)
+					if err != nil {
+						return nil, err
+					}
+					n, err := mp4.readString(box.BoxSize - 12)
+					if err != nil {
+						return nil, err
+					}
+					if mp4.upperCustom {
+						n = strings.ToUpper(n)
+					}
+					name = n
+				} else if box.Path == "moov.udta.meta.ilst.----.data" {
+					_, err := mp4.f.Seek(box.StartOffset+16, io.SeekStart)
+					if err != nil {
+						return nil, err
+					}
+					v, err := mp4.readString(box.BoxSize - 16)
+					if err != nil {
+						return nil, err
+					}
+					values = append(values, v)
+				}
 			}
-		} else {
-			custom[name] = values[idx]
+		}
+
+		if name != "" && len(values) > 0 {
+			existing, ok := custom[name]
+			if ok {
+				custom[name] = append(existing, values...)
+			} else {
+				custom[name] = values
+			}
 		}
 	}
-	return custom, others, nil
+
+	return custom, nil
 }
 
 func (mp4 MP4) readITAlbumID(boxes MP4Boxes) (int32, error) {
@@ -429,7 +401,7 @@ func (mp4 MP4) readTags(boxes MP4Boxes) (*MP4Tags, error) {
 	if err != nil {
 		return nil, err
 	}
-	custom, otherCustom, err := mp4.readCustom(boxes)
+	custom, err := mp4.readCustom(boxes)
 	if err != nil {
 		return nil, err
 	}
@@ -519,7 +491,6 @@ func (mp4 MP4) readTags(boxes MP4Boxes) (*MP4Tags, error) {
 		ItunesArtistID:  artistID,
 		Lyrics:          lyrics,
 		Narrator:        narrator,
-		OtherCustom:     otherCustom,
 		Pictures:        pics,
 		Publisher:       publisher,
 		Title:           title,

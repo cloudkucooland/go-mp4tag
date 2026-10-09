@@ -287,7 +287,7 @@ type MP4Tags struct {
 	ComposerSort    string
 	Conductor       string
 	Copyright       string
-	Custom          map[string]string
+	Custom          map[string][]string
 	CustomGenre     string
 	Date            string
 	Description     string
@@ -300,7 +300,6 @@ type MP4Tags struct {
 	ItunesArtistID  int32
 	Lyrics          string
 	Narrator        string
-	OtherCustom     map[string][]string
 	Pictures        []*MP4Picture
 	Publisher       string
 	Title           string
