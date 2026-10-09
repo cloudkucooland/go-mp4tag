@@ -10,144 +10,149 @@ import (
 	"strings"
 )
 
-const BufSize = 4096*1024
+const BufSize = 4096 * 1024
 
-func overwriteTags(mergedTags, tags *MP4Tags, delStrings []string) *MP4Tags{
+func overwriteTags(mergedTags, tags *MP4Tags, delStrings []string) *MP4Tags {
 	if containsStr(delStrings, "alltags") {
 		mergedPics := mergedTags.Pictures
 		mergedTags = &MP4Tags{}
 		mergedTags.Pictures = mergedPics
 	} else if containsStr(delStrings, "allcustom") {
-		mergedTags.Custom = map[string]string{}
-	}
-	if containsStr(delStrings, "allothercustom") {
-		mergedTags.OtherCustom = map[string][]string{}
+		mergedTags.Custom = map[string][]string{}
 	}
 
 	if mergedTags.Custom == nil {
-		mergedTags.Custom = map[string]string{}
-	}
-	if mergedTags.OtherCustom == nil {
-		mergedTags.OtherCustom = map[string][]string{}
+		mergedTags.Custom = map[string][]string{}
 	}
 
-	if containsStr(delStrings,  "album") {
+	for _, del := range delStrings {
+		if strings.HasPrefix(del, "custom:") {
+			targetKey := strings.TrimPrefix(del, "custom:")
+			for k := range mergedTags.Custom {
+				if strings.ToLower(k) == targetKey {
+					delete(mergedTags.Custom, k)
+				}
+			}
+		}
+	}
+
+	if containsStr(delStrings, "album") {
 		mergedTags.Album = ""
 	}
 
-	if containsStr(delStrings,  "albumartist") {
+	if containsStr(delStrings, "albumartist") {
 		mergedTags.AlbumArtist = ""
 	}
 
-	if containsStr(delStrings,  "albumartistsort") {
+	if containsStr(delStrings, "albumartistsort") {
 		mergedTags.AlbumArtistSort = ""
 	}
 
-	if containsStr(delStrings,  "albumsort") {
+	if containsStr(delStrings, "albumsort") {
 		mergedTags.AlbumSort = ""
 	}
 
-	if containsStr(delStrings,  "artist") {
+	if containsStr(delStrings, "artist") {
 		mergedTags.Artist = ""
 	}
 
-	if containsStr(delStrings,  "artistsort") {
+	if containsStr(delStrings, "artistsort") {
 		mergedTags.ArtistSort = ""
 	}
 
-	if containsStr(delStrings,  "bpm") {
+	if containsStr(delStrings, "bpm") {
 		mergedTags.BPM = 0
 	}
 
-	if containsStr(delStrings,  "comment") {
+	if containsStr(delStrings, "comment") {
 		mergedTags.Comment = ""
 	}
 
-	if containsStr(delStrings,  "composer") {
+	if containsStr(delStrings, "composer") {
 		mergedTags.Composer = ""
 	}
 
-	if containsStr(delStrings,  "composersort") {
+	if containsStr(delStrings, "composersort") {
 		mergedTags.ComposerSort = ""
 	}
 
-	if containsStr(delStrings,  "conductor") {
+	if containsStr(delStrings, "conductor") {
 		mergedTags.Conductor = ""
 	}
 
-	if containsStr(delStrings,  "copyright") {
+	if containsStr(delStrings, "copyright") {
 		mergedTags.Copyright = ""
 	}
 
-	if containsStr(delStrings,  "customgenre") {
+	if containsStr(delStrings, "customgenre") {
 		mergedTags.CustomGenre = ""
 	}
 
-	if containsStr(delStrings,  "date") {
+	if containsStr(delStrings, "date") {
 		mergedTags.Date = ""
 	}
 
-	if containsStr(delStrings,  "description") {
+	if containsStr(delStrings, "description") {
 		mergedTags.Description = ""
 	}
 
-	if containsStr(delStrings,  "director") {
+	if containsStr(delStrings, "director") {
 		mergedTags.Director = ""
 	}
 
-	if containsStr(delStrings,  "discnumber") || containsStr(delStrings,  "disknumber") {
+	if containsStr(delStrings, "discnumber") || containsStr(delStrings, "disknumber") {
 		mergedTags.DiscNumber = 0
 	}
 
-	if containsStr(delStrings,  "disctotal") || containsStr(delStrings,  "disktotal") {
+	if containsStr(delStrings, "disctotal") || containsStr(delStrings, "disktotal") {
 		mergedTags.DiscTotal = 0
 	}
 
-	if containsStr(delStrings,  "genre") {
+	if containsStr(delStrings, "genre") {
 		mergedTags.Genre = GenreNone
 	}
 
-	if containsStr(delStrings,  "itunesadvisory") {
+	if containsStr(delStrings, "itunesadvisory") {
 		mergedTags.ItunesAdvisory = ItunesAdvisoryNone
 	}
 
-	if containsStr(delStrings,  "itunesalbumid") {
+	if containsStr(delStrings, "itunesalbumid") {
 		mergedTags.ItunesAlbumID = 0
-	}	
+	}
 
-	if containsStr(delStrings,  "itunesartistid") {
+	if containsStr(delStrings, "itunesartistid") {
 		mergedTags.ItunesArtistID = 0
 	}
 
-	if containsStr(delStrings,  "lyrics") {
+	if containsStr(delStrings, "lyrics") {
 		mergedTags.Lyrics = ""
 	}
 
-	if containsStr(delStrings,  "narrator") {
+	if containsStr(delStrings, "narrator") {
 		mergedTags.Narrator = ""
 	}
 
-	if containsStr(delStrings,  "publisher") {
+	if containsStr(delStrings, "publisher") {
 		mergedTags.Publisher = ""
 	}
 
-	if containsStr(delStrings,  "title") {
+	if containsStr(delStrings, "title") {
 		mergedTags.Title = ""
 	}
 
-	if containsStr(delStrings,  "titlesort") {
+	if containsStr(delStrings, "titlesort") {
 		mergedTags.TitleSort = ""
 	}
 
-	if containsStr(delStrings,  "tracknumber") {
+	if containsStr(delStrings, "tracknumber") {
 		mergedTags.TrackNumber = 0
 	}
 
-	if containsStr(delStrings,  "tracktotal") {
+	if containsStr(delStrings, "tracktotal") {
 		mergedTags.TrackTotal = 0
 	}
 
-	if containsStr(delStrings,  "year") {
+	if containsStr(delStrings, "year") {
 		mergedTags.Year = 0
 	}
 
@@ -268,45 +273,33 @@ func overwriteTags(mergedTags, tags *MP4Tags, delStrings []string) *MP4Tags{
 
 	if tags.Year > 0 {
 		mergedTags.Year = tags.Year
-	}	
+	}
 
 	if tags.Genre != GenreNone {
 		mergedTags.Genre = tags.Genre
 	}
 
 	for k, v := range tags.Custom {
-		if containsStr(delStrings, "custom:"+k) {
+		if containsStr(delStrings, "custom:"+strings.ToLower(k)) || len(v) == 0 {
 			continue
 		}
-		if v != "" {
-			mergedTags.Custom[k] = v
+		for existingKey := range mergedTags.Custom {
+			if strings.EqualFold(existingKey, k) {
+				delete(mergedTags.Custom, existingKey)
+			}
 		}
-	}
-
-	for k, v := range tags.OtherCustom {
-		if containsStr(delStrings, "custom:"+k) || len(v) < 1 {
-			continue
-		}
-		_, ok := mergedTags.OtherCustom[k]
-		if ok {
-			mergedTags.OtherCustom[k] = append(mergedTags.OtherCustom[k], v...)
-		} else {
-			mergedTags.OtherCustom[k] = v
-		}
-
+		mergedTags.Custom[k] = v
 	}
 
 	var filteredPics []*MP4Picture
 
 	for idx, p := range mergedTags.Pictures {
-		if !containsStr(delStrings,  fmt.Sprintf("picture:%d", idx+1)) {
+		if !containsStr(delStrings, fmt.Sprintf("picture:%d", idx+1)) {
 			filteredPics = append(filteredPics, p)
 		}
 	}
 
-	for _, p := range tags.Pictures {
-		filteredPics = append(filteredPics, p)
-	}
+	filteredPics = append(filteredPics, tags.Pictures...)
 
 	mergedTags.Pictures = filteredPics
 	return mergedTags
@@ -339,23 +332,23 @@ func (mp4 MP4) updateChunkOffsets(outF *os.File, boxes MP4Boxes, oldIlistSize, n
 	if err != nil {
 		return err
 	}
-    if stco.BoxSize != int64(count) * 4 + 16 {
-    	return &ErrInvalidStcoSize{}
-    }
+	if stco.BoxSize != int64(count)*4+16 {
+		return &ErrInvalidStcoSize{}
+	}
 
-    for i := int32(1);  i<=count; i++ {
-    	offset, err  := mp4.readI32BE()
-    	if err != nil {
-    		return err
-    	}
-    	offsetBytes := putI32BE(offset-int32(oldIlistSize)+int32(newIlistSize))
-    	_, err = outF.Write(offsetBytes)
-    	if err != nil {
-    		return err
-    	}
-    }
+	for i := int32(1); i <= count; i++ {
+		offset, err := mp4.readI32BE()
+		if err != nil {
+			return err
+		}
+		offsetBytes := putI32BE(offset - int32(oldIlistSize) + int32(newIlistSize))
+		_, err = outF.Write(offsetBytes)
+		if err != nil {
+			return err
+		}
+	}
 
-    return nil
+	return nil
 }
 
 func (mp4 MP4) readToOffset(f *os.File, startOffset int64) error {
@@ -368,11 +361,11 @@ func (mp4 MP4) readToOffset(f *os.File, startOffset int64) error {
 
 	for {
 		read, err := mp4.f.Read(buf)
-		if err != nil { 
+		if err != nil {
 			if err == io.EOF {
-                break
-            }
-            return err
+				break
+			}
+			return err
 		}
 		readI64 := int64(read)
 		totalRead += readI64
@@ -390,7 +383,6 @@ func (mp4 MP4) readToOffset(f *os.File, startOffset int64) error {
 	}
 	return nil
 }
-
 
 func writeRegular(f *os.File, boxName, val string, prefix bool) error {
 	// boxSize := utf8.RuneCountInString(val) + 24
@@ -412,11 +404,11 @@ func writeRegular(f *os.File, boxName, val string, prefix bool) error {
 	if err != nil {
 		return err
 	}
-	boxSizeBytes = putI32BE(boxSizeI32-8)
+	boxSizeBytes = putI32BE(boxSizeI32 - 8)
 	_, err = f.Write(boxSizeBytes)
 	if err != nil {
 		return err
-	}	
+	}
 	_, err = f.WriteString("data")
 	if err != nil {
 		return err
@@ -481,7 +473,7 @@ func writeTrknDisc(f *os.File, n, total int16, isTrkn bool) error {
 	if err != nil {
 		return err
 	}
-	boxSizeBytes = putI32BE(boxSize-8)
+	boxSizeBytes = putI32BE(boxSize - 8)
 	if err != nil {
 		return err
 	}
@@ -489,7 +481,7 @@ func writeTrknDisc(f *os.File, n, total int16, isTrkn bool) error {
 	if err != nil {
 		return err
 	}
-	_, err = f.WriteString("data")	
+	_, err = f.WriteString("data")
 	if err != nil {
 		return err
 	}
@@ -562,7 +554,7 @@ func writeAdvisory(f *os.File, advisory ItunesAdvisory) error {
 	_, err = f.Write([]byte{0x0, 0x0, 0x0, 0x15, 0x0, 0x0, 0x0, 0x0})
 	if err != nil {
 		return err
-	}	
+	}
 	_, err = f.Write([]byte{byte(advisory)})
 	return err
 }
@@ -571,7 +563,7 @@ func writeItunesAlbumID(f *os.File, albumID int32) error {
 	_, err := f.Write([]byte{0x0, 0x0, 0x0, 0x20})
 	if err != nil {
 		return err
-	}	
+	}
 	_, err = f.WriteString("plID")
 	if err != nil {
 		return err
@@ -598,7 +590,7 @@ func writeItunesArtistID(f *os.File, artistID int32) error {
 	_, err := f.Write([]byte{0x0, 0x0, 0x0, 0x1C})
 	if err != nil {
 		return err
-	}	
+	}
 	_, err = f.WriteString("atID")
 	if err != nil {
 		return err
@@ -621,9 +613,10 @@ func writeItunesArtistID(f *os.File, artistID int32) error {
 	return err
 }
 
-func writeCustom(f *os.File, name, value string, upper bool, others map[string][]string) error {	
-	valueBytes := []byte(value)
-	valueSize := len(valueBytes)
+func writeCustom(f *os.File, name string, values []string, upper bool) error {
+	if len(values) == 0 {
+		return nil
+	}
 
 	if upper {
 		name = strings.ToUpper(name)
@@ -631,11 +624,9 @@ func writeCustom(f *os.File, name, value string, upper bool, others map[string][
 	nameUpperBytes := []byte(name)
 	nameSize := len(nameUpperBytes)
 
-	totalSize := nameSize+valueSize+64
-	otherCust, _ := others[name]
-
-	for _, other := range otherCust {
-		totalSize += len([]byte(other)) + 16
+	totalSize := nameSize + 48
+	for _, v := range values {
+		totalSize += len([]byte(v)) + 16
 	}
 
 	// 48
@@ -651,7 +642,7 @@ func writeCustom(f *os.File, name, value string, upper bool, others map[string][
 	_, err = f.Write([]byte{0x0, 0x0, 0x0, 0x1C})
 	if err != nil {
 		return err
-	}	
+	}
 	_, err = f.WriteString("mean")
 	if err != nil {
 		return err
@@ -664,7 +655,7 @@ func writeCustom(f *os.File, name, value string, upper bool, others map[string][
 	if err != nil {
 		return err
 	}
-	sizeBytes = putI32BE(int32(nameSize)+12)
+	sizeBytes = putI32BE(int32(nameSize) + 12)
 	_, err = f.Write(sizeBytes)
 	if err != nil {
 		return err
@@ -681,30 +672,11 @@ func writeCustom(f *os.File, name, value string, upper bool, others map[string][
 	if err != nil {
 		return err
 	}
-	sizeBytes = putI32BE(int32(valueSize)+16)
-	_, err = f.Write(sizeBytes)
-	if err != nil {
-		return err
-	}
-	_, err = f.WriteString("data")
-	if err != nil {
-		return err
-	}
-	_, err = f.Write(
-		[]byte{0x0, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0})
-	if err != nil {
-		return err
-	}
-	_, err = f.Write(valueBytes)
-	if err != nil {
-		return err
-	}
 
-
-	for _, v := range otherCust {
-		valueBytes = []byte(v)
-		valueSize = len(valueBytes)
-		sizeBytes = putI32BE(int32(valueSize)+16)
+	for _, v := range values {
+		valueBytes := []byte(v)
+		valueSize := len(valueBytes)
+		sizeBytes = putI32BE(int32(valueSize) + 16)
 		_, err = f.Write(sizeBytes)
 		if err != nil {
 			return err
@@ -764,7 +736,7 @@ func writePics(f *os.File, pics []*MP4Picture) error {
 		if dataSize < 1 {
 			continue
 		}
-		boxSizeBytes = putI32BE(int32(dataSize+16))
+		boxSizeBytes = putI32BE(int32(dataSize + 16))
 		_, err = f.Write(boxSizeBytes)
 		if err != nil {
 			return err
@@ -837,8 +809,8 @@ func (mp4 MP4) writeRemaining(f *os.File) error {
 		read, err := mp4.f.Read(buf)
 		if err != nil {
 			if err == io.EOF {
-                break
-            }
+				break
+			}
 			return err
 		}
 		if read < BufSize {
@@ -858,22 +830,22 @@ func (mp4 MP4) writeRemaining(f *os.File) error {
 
 func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 	ilst := boxes.getBoxByPath("moov.udta.meta.ilst")
-    oldIlstSize := ilst.BoxSize
-    f, err := os.OpenFile(tempPath, os.O_CREATE|os.O_WRONLY, 0644)
-    if err != nil {
-    	return err
-    }
-    defer f.Close()
-    err = mp4.readToOffset(f, ilst.StartOffset)
-    if err != nil {
-    	return err
-    }
-    ilstStartOffset, err := getPos(f)
-    if err != nil {
-    	return err
-    }
+	oldIlstSize := ilst.BoxSize
+	f, err := os.OpenFile(tempPath, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	err = mp4.readToOffset(f, ilst.StartOffset)
+	if err != nil {
+		return err
+	}
+	ilstStartOffset, err := getPos(f)
+	if err != nil {
+		return err
+	}
 
-   	_, err = f.Write(bytes.Repeat([]byte{0x0}, 4))
+	_, err = f.Write(bytes.Repeat([]byte{0x0}, 4))
 	if err != nil {
 		return err
 	}
@@ -988,7 +960,7 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		if err != nil {
 			return err
 		}
-	}	
+	}
 
 	if tags.Conductor != "" {
 		err = writeRegular(f, "con", tags.Conductor, true)
@@ -1004,14 +976,14 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		}
 	}
 
-	if tags.ItunesAlbumID > 0  {
+	if tags.ItunesAlbumID > 0 {
 		err = writeItunesAlbumID(f, tags.ItunesAlbumID)
 		if err != nil {
 			return err
 		}
 	}
 
-	if tags.ItunesArtistID > 0  {
+	if tags.ItunesArtistID > 0 {
 		err = writeItunesArtistID(f, tags.ItunesArtistID)
 		if err != nil {
 			return err
@@ -1022,21 +994,21 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		err = writeTrknDisc(f, tags.TrackNumber, tags.TrackTotal, true)
 		if err != nil {
 			return err
-		}		
+		}
 	}
 
 	if tags.DiscNumber > 0 || tags.DiscTotal > 0 {
 		err = writeTrknDisc(f, tags.DiscNumber, tags.DiscTotal, false)
 		if err != nil {
 			return err
-		}		
+		}
 	}
-	
+
 	if tags.BPM > 0 {
 		err = writeBPM(f, tags.BPM)
 		if err != nil {
 			return err
-		}		
+		}
 	}
 
 	if tags.Year > 0 {
@@ -1044,22 +1016,22 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		if err != nil {
 			return err
 		}
-	} else if tags.Date == "" {
+	} else if tags.Date != "" {
 		err = writeRegular(f, "day", tags.Date, true)
 		if err != nil {
 			return err
-		}	
+		}
 	}
 
 	if tags.Genre != GenreNone {
 		err = writeGenre(f, tags.Genre)
 		if err != nil {
 			return err
-		}		
+		}
 	}
-	
+
 	for k, v := range tags.Custom {
-		err = writeCustom(f, k, v, mp4.upperCustom, tags.OtherCustom)
+		err = writeCustom(f, k, v, mp4.upperCustom)
 		if err != nil {
 			return err
 		}
@@ -1070,7 +1042,7 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		return err
 	}
 
-	newIlstEndOffset, err := getPos(f)	
+	newIlstEndOffset, err := getPos(f)
 	if err != nil {
 		return err
 	}
@@ -1090,7 +1062,7 @@ func (mp4 MP4) writeTags(boxes MP4Boxes, tags *MP4Tags, tempPath string) error {
 		err = mp4.updateChunkOffsets(f, boxes, oldIlstSize, newIlstSize)
 		if err != nil {
 			return err
-		}	
+		}
 	}
 
 	_, err = f.Seek(newIlstEndOffset, io.SeekStart)
@@ -1116,8 +1088,8 @@ func (mp4 *MP4) actualWrite(tags *MP4Tags, _delStrings []string) error {
 		return &ErrBoxNotPresent{Msg: "ilst box not present, implement me"}
 	}
 	mergedTags = overwriteTags(mergedTags, tags, delStrings)
-   	tempPath := getTempPath(mp4.path)
-   	err = mp4.writeTags(boxes, mergedTags, tempPath)
+	tempPath := getTempPath(mp4.path)
+	err = mp4.writeTags(boxes, mergedTags, tempPath)
 	if err != nil {
 		return err
 	}

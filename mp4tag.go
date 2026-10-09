@@ -7,11 +7,11 @@ import (
 	"os"
 )
 
-func (mp4 *MP4) UpperCustom(b bool) { 
+func (mp4 *MP4) UpperCustom(b bool) {
 	mp4.upperCustom = b
 }
 
-func (mp4 *MP4) Close() error { 
+func (mp4 *MP4) Close() error {
 	return mp4.f.Close()
 }
 
@@ -64,9 +64,9 @@ func Open(trackPath string) (*MP4, error) {
 	}
 
 	mp4 := &MP4{
-		f: f,
-		size : stat.Size(),
-		path: trackPath,
+		f:           f,
+		size:        stat.Size(),
+		path:        trackPath,
 		upperCustom: true,
 	}
 	err = mp4.checkHeader()
